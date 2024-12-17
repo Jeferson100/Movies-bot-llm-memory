@@ -89,10 +89,10 @@ def chat_reposta_condicional(enter, memory, config_memory):
 # Configuração do Streamlit
 st.title("Assistente de filmes e séries")
 
-"""st.image(
-    "imagem_modificada.webp",
+st.image(
+    "https://raw.githubusercontent.com/Jeferson100/Movies-bot-llm-memory/refs/heads/main/imagen/imagem_modificada.webp",
     use_column_width=True,
-)"""
+)
 
 with st.sidebar:
     st.markdown("# Sobre")
