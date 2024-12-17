@@ -1,0 +1,22 @@
+[theme]
+
+## Site para ver as cores https://corhexa.com/b8082c
+# the preset streamlit theme that your custom theme inherits from.
+
+base = "light"  # 'dark'ou "light"
+
+# primary accent color for interactive elements.
+primaryColor = "#0a0b08" # azul claro, pode ser alterado
+
+# background color for the main content area.
+backgroundColor = "#f5f7f1" # background escuro 
+
+# background color used for the sidebar and most interactive widgets.
+secondaryBackgroundColor = "#d4eea7"# um pouco mais escuro que o fundo
+
+# color used for almost all text.
+textColor = "black" 
+
+# font family for all text in the app, except code blocks. one of "sans serif",
+# ['sans serif', 'serif', 'monospace']
+font = "monospace" # fonte padrão
