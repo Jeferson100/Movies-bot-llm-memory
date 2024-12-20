@@ -15,15 +15,14 @@ class LinksExtractorFireCrawl:
         scrape_result = app.scrape_url(url, params={"formats": ["markdown"]})
         return scrape_result
 
-    def clean_text_firecrawl(self, url: str) -> list[str]:
+    def clean_text_firecrawl(self, url: str) -> str:
         # Extract the markdown content
         scrape_result = self.extrair_links_firecrawl(url)
 
+        markdown = scrape_result["markdown"]  # type: ignore[index]
         # Remove the links
         text_without_links = [
-            line
-            for line in scrape_result["markdown"].split("\n")
-            if "https" not in line
+            line for line in markdown.split("\n") if "https" not in line
         ]
 
         # Remove leading/trailing whitespace

@@ -6,18 +6,23 @@ from langchain.prompts.chat import (
 )
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
-import os
-from typing import Dict, List, Tuple
+from .verificao_key import get_secret_key
 
 load_dotenv()
 
+api_secret = get_secret_key("GROQ_API_KEY")
+if api_secret is None:
+    raise ValueError("API key inválida ou não definida")
+load_dotenv()
 
-def chat_limpa_resposta(texto: str):
-    model = ChatGroq(# type: ignore
-        api_key=os.getenv("GROQ_API_KEY"),# type: ignore,
-        model="llama-3.2-11b-vision-preview",# type: ignore
-        temperature=0.5,# type: ignore
-    )  # type: ignore
+
+def chat_limpa_resposta(texto: str) -> str:
+    model = ChatGroq(
+        api_key=api_secret,
+        model="llama-3.2-11b-vision-preview",
+        temperature=0.5,
+        stop_sequences=None,
+    )
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -34,6 +39,6 @@ def chat_limpa_resposta(texto: str):
 
     llm_chain = prompt | model | StrOutputParser()
 
-    resposta = llm_chain.invoke([{"role": "user", "content": texto}])
+    resposta = llm_chain.invoke({"input": texto})
 
     return resposta

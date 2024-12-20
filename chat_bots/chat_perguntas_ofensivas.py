@@ -2,10 +2,17 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
-import os
+from typing import Dict, List, Tuple
+from .verificao_key import get_secret_key
+
+api_secret = get_secret_key("GROQ_API_KEY")
+if api_secret is None:
+    raise ValueError("API key inválida ou não definida")
 
 
-def chat_avaliacao_perguntas_ofensivas(mensagem: str) -> dict:
+def chat_avaliacao_perguntas_ofensivas(
+    mensagem: str,
+) -> Dict[str, List[Tuple[str, str]]]:
 
     class resposta(BaseModel):
         boleano: str = Field(
@@ -16,9 +23,10 @@ def chat_avaliacao_perguntas_ofensivas(mensagem: str) -> dict:
         )
 
     model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),
+        api_key=api_secret,
         model="llama-3.2-11b-vision-preview",
         temperature=0.5,
+        stop_sequences=None,
     )
     parser = JsonOutputParser(pydantic_object=resposta)
 
@@ -78,4 +86,4 @@ def chat_avaliacao_perguntas_ofensivas(mensagem: str) -> dict:
 
     response = chain.invoke({"query": mensagem})
 
-    return response
+    return {"messages": [("assistant", response)]}

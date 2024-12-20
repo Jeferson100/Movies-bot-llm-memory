@@ -36,3 +36,4 @@ pytest-cov==4.0.0
 pylint
 mypy
 pyright
+langchain_tests

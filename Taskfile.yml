@@ -17,13 +17,13 @@ tasks:
     cmds:
       - pylint --disable=R,C chat_bots/*.py extracao/*.py funcoes_auxiliares/*.py app_streamlit.py
 
-  type pyright:
-    desc:"Run type checking with Pyright"
+  typepyright:
+    desc: "Run type checking with Pyright"
     cmds:
       - pyright chat_bots/*.py extracao/*.py funcoes_auxiliares/*.py app_streamlit.py
   
-  type mypy:
-    desc:"Run type checking with Mypy"
+  typemypy:
+    desc: "Run type checking with Mypy"
     cmds:
       - mypy chat_bots/*.py extracao/*.py funcoes_auxiliares/*.py app_streamlit.py
 
@@ -39,9 +39,10 @@ tasks:
       - task: lint
 
   all:
-    desc: "Install, lint, format, and test"
+    desc: "Install, lint, format, test and type check"
     cmds:
       - task: install
       - task: lint
       - task: format
       - task: test
+      - task: typepyright

@@ -6,21 +6,28 @@ from langchain.prompts.chat import (
 )
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
-import os
 from dotenv import load_dotenv
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from typing import Dict, List, Tuple
+from .verificao_key import get_secret_key
 
 load_dotenv()
 
+api_secret = get_secret_key("GROQ_API_KEY")
+if api_secret is None:
+    raise ValueError("API key inválida ou não definida")
 
-def chat_bot(mensagem: str, memory, config: dict) -> Dict[str, List[Tuple[str, str]]]:
+
+def chat_bot(
+    mensagem: str, memory: str, config: Dict[str, Dict[str, str]]
+) -> Dict[str, List[Tuple[str, str]]]:
 
     model = ChatGroq(
-        api_key = os.getenv("GROQ_API_KEY"),
+        api_key=api_secret,
         model="llama-3.3-70b-versatile",
         temperature=0.5,
-    )  
+        stop_sequences=None,
+    )
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -59,12 +66,12 @@ def chat_bot(mensagem: str, memory, config: dict) -> Dict[str, List[Tuple[str, s
     llm_chain = prompt | model | StrOutputParser()
 
     chain_with_history = RunnableWithMessageHistory(
-        llm_chain,
-        memory,
+        llm_chain,  # type: ignore
+        memory,  # type: ignore
         input_messages_key="input",
         history_messages_key="history",
     )
 
-    resposta = chain_with_history.invoke({"input": mensagem}, config = config) # type: ignore
+    resposta = chain_with_history.invoke({"input": mensagem}, config=config)  # type: ignore
 
     return {"messages": [("assistant", resposta)]}

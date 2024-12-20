@@ -5,6 +5,6 @@
     "strictListInference": true,
     "strictDictionaryInference": true,
     "strictParameterNoneValue": true,
-    "reportArgumentType": "none",
-    "reportCallIssue" : "none"
+    //"reportArgumentType": "none",
+    //"reportCallIssue" : "none"
 }

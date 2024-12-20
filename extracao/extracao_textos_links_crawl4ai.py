@@ -2,7 +2,6 @@ import asyncio
 from crawl4ai import AsyncWebCrawler
 
 
-
 class LinksExtractor:
     async def extract_links(self, url: str) -> str:
         """
@@ -16,9 +15,9 @@ class LinksExtractor:
         """
         async with AsyncWebCrawler(verbose=True) as crawler:
             result = await crawler.arun(url=url)
-            return result.markdown
+            return result.markdown  # type: ignore
 
-    def clean_text(self, url: str) -> list[str]:
+    def clean_text(self, url: str) -> str:
         """
         Extracts and cleans the text from the given URL.
 

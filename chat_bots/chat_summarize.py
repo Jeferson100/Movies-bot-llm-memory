@@ -6,12 +6,16 @@ from langchain.prompts.chat import (
 )
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
-import os
+from .verificao_key import get_secret_key
 
 load_dotenv()
 
+api_key = get_secret_key("GROQ_API_KEY")
+if api_key is None:
+    raise ValueError("API key inválida ou não definida")
 
-def chat_summarize_messages(message):
+
+def chat_summarize_messages(message: str) -> str:
     """
     Summarize the last two messages in the chat history.
 
@@ -24,9 +28,10 @@ def chat_summarize_messages(message):
 
     """
     model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),
+        api_key=api_key,
         model="llama-3.2-11b-vision-preview",
         temperature=0.5,
+        stop_sequences=None,
     )
 
     prompt_summary = ChatPromptTemplate.from_messages(
@@ -44,4 +49,5 @@ def chat_summarize_messages(message):
 
     llm_chain_summary = prompt_summary | model | StrOutputParser()
 
-    return llm_chain_summary.invoke([{"role": "user", "content": message}])
+    # return llm_chain_summary.invoke([{"role": "user", "content": message}])
+    return llm_chain_summary.invoke({"input": message})

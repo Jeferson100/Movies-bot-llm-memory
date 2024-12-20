@@ -5,17 +5,23 @@ from langchain.prompts.chat import (
 )
 from langchain_groq import ChatGroq
 from langchain_core.output_parsers import StrOutputParser
-import os
-from typing import Dict, List, Tuple
+from typing import Dict, List
+
+from .verificao_key import get_secret_key
+
+api_secret = get_secret_key("GROQ_API_KEY")
+if api_secret is None:
+    raise ValueError("API key inválida ou não definida")
 
 
-def chat_avaliacao(mensagem: str) -> Dict[str, List[Tuple[str, str]]]:
+def chat_avaliacao(mensagem: str) -> Dict[str, List[Dict[str, str]]]:
 
-    model = ChatGroq(# type: ignore
-        api_key=os.getenv("GROQ_API_KEY"),# type: ignore,
-        model="llama-3.2-11b-vision-preview",# type: ignore
-        temperature=0.5,# type: ignore
-    )  # type: ignore
+    model = ChatGroq(
+        api_key=api_secret,
+        model="llama-3.2-11b-vision-preview",
+        temperature=0.5,
+        stop_sequences=None,
+    )
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -72,4 +78,4 @@ def chat_avaliacao(mensagem: str) -> Dict[str, List[Tuple[str, str]]]:
 
     resposta = llm_chain.invoke({"input": mensagem})
 
-    return {"messages": [("assistant", resposta)]}
+    return {"messages": [{"content": resposta}]}

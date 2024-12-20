@@ -7,7 +7,6 @@ from aiohttp import ClientConnectorDNSError
 from linkup import LinkupClient
 from chat_bots import chat_limpa_resposta, chat_avaliacao
 
-
 load_dotenv()
 
 
@@ -22,41 +21,6 @@ def sorteando_range_texto(texto):
     input_incor = texto[indice_inicial:indice_final]
 
     return input_incor
-
-
-def verificar_texto(state):
-    try:
-        if isinstance(state, str):
-            last_message = state[-1].lower()
-
-        if isinstance(state["messages"], list):
-            last_message = state["messages"][0].content.lower()
-
-        if isinstance(state["messages"], dict):
-            last_message = state["messages"][0].content.lower()
-        # pylint: disable=E0606, W0707
-        if last_message is None:
-            raise ValueError("Mensagem não encontrada")
-
-        return last_message
-        # pylint: disable=E0606, W0707
-
-    except AttributeError:
-        if isinstance(state["messages"], list):
-            last_message = state["messages"][-1]["content"].lower()
-
-        if isinstance(state["messages"], dict):
-            last_message = state["messages"][-1]["content"].lower()
-
-        if isinstance(state, str):
-            last_message = state[-1].lower()
-
-        # pylint: disable=E0606, W0707
-        if last_message is None:
-            raise ValueError("Mensagem não encontrada")
-
-        return last_message
-        # pylint: disable=E0606, W0707
 
 
 def search_and_incorporateta_tavily(user_input):
@@ -81,6 +45,9 @@ def search_and_incorporateta_tavily(user_input):
         include_answer=True,
         include_raw_content=True,
         include_images=False,
+        include_domains=['https://www.adorocinema.com/', 
+                         'https://www.rottentomatoes.com/',
+                         'https://cinepop.com.br/']
     )
 
     pesquisa = search_tool.invoke({"query": user_input})
@@ -147,6 +114,7 @@ def search_and_incorporateta_LinkupClient(user_input):
         query=user_input,
         depth="standard",
         output_type="searchResults",
+        
     )
 
     links = [
@@ -170,7 +138,7 @@ def search_and_incorporateta_LinkupClient(user_input):
     for link in links_results:
         try:
             print(link)
-            texto.append(extractor.clean_text_html2text(link, timeout=20))
+            texto.append(extractor.clean_text_html2text(link))
         except ClientConnectorDNSError:
             pass
 
@@ -184,7 +152,7 @@ def search_and_incorporateta_LinkupClient(user_input):
 
     combined_input = user_input + "\n%%%\n" + texto_clean_final
 
-    return {"messages": [("user", combined_input)]}
+    return {"messages": [{"content": combined_input}]}
 
 
 def condicional_edges(state):
@@ -203,9 +171,10 @@ def condicional_edges(state):
     through a search process that may truncate the message if it exceeds a certain length.
     """
 
-    last_message = verificar_texto(state)
+    if isinstance(state, dict):
+        state = state["messages"][0]["content"]
 
-    resposta_avaliada = chat_avaliacao(last_message)
+    resposta_avaliada = chat_avaliacao(state)
 
     print(resposta_avaliada)
 
@@ -213,25 +182,22 @@ def condicional_edges(state):
 
     # Condicional melhorado
     if any(
-        palavra in resposta_avaliada["messages"][0][1].lower()
+        palavra in resposta_avaliada["messages"][0]["content"].lower()
         for palavra in palavras_chave
     ):
 
-        input_incorporado = search_and_incorporateta_LinkupClient(last_message)
+        input_incorporado = search_and_incorporateta_LinkupClient(state)
 
         print(input_incorporado)
 
         if isinstance(input_incorporado, dict):
-            input_incorporado = input_incorporado["messages"][0][1]
-
-        if isinstance(input_incorporado, list):
-            input_incorporado = input_incorporado["messages"][0][1]
+            input_incorporado = input_incorporado["messages"][0]["content"] # type: ignore
 
         if len(input_incorporado) > 6000:
 
             input_incorporado = sorteando_range_texto(input_incorporado)
 
-        return {"messages": [("user", input_incorporado)]}
+        return {"messages": [{"content": input_incorporado}]}
 
     else:
 

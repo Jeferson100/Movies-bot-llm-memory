@@ -14,23 +14,9 @@ class LinksExtractorHtml2Text:
 
         return doc_transformed.page_content
 
-    def extrair_links_timeout(self, url: str, timeout: int = 20) -> str:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            # Submete a tarefa
-            future = executor.submit(self.extrair_links_html2text, url)
 
-            try:
-                # Aguarda com timeout
-                resultado = future.result(timeout=timeout)
-                return resultado
-
-            except concurrent.futures.TimeoutError:
-                # Cancela a tarefa se exceder o tempo limite
-                future.cancel()
-                return f"Extração interrompida. Tempo limite de {timeout} segundos excedido."
-
-    def clean_text_html2text(self, url: str, timeout: int = 20) -> str:
-        scrape_result = self.extrair_links_timeout(url, timeout=timeout)
+    def clean_text_html2text(self, url: str) -> str:
+        scrape_result = self.extrair_links_html2text(url)
         linhas = scrape_result.split("\n")
 
         # Remover links, linhas vazias, linhas com colchetes e linhas curtas

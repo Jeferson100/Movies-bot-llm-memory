@@ -55,14 +55,16 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
 
     if store[session_id].messages:
         for mes in store[session_id].messages[-2:]:
-            if isinstance(message, HumanMessage):
+            if isinstance(mes, HumanMessage):
                 if "\n%%%\n" in mes.content:
                     store[session_id].messages[
                         store[session_id].messages.index(mes)
-                    ] = HumanMessage(content=mes.content.split("\n%%%\n")[0])
+                    ] = HumanMessage(
+                        content=mes.content.split("\n%%%\n")[0]  # type: ignore
+                    )  # type: ignore
             if isinstance(message, AIMessage):
                 store[session_id].messages[store[session_id].messages.index(mes)] = (
-                    AIMessage(content=chat_summarize_messages(mes.content))
+                    AIMessage(content=chat_summarize_messages(mes.content))  # type: ignore
                 )
 
     # Removendo as duas primeiras mensagens
@@ -72,12 +74,13 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
     return store[session_id]
 
 
-def chat_reposta_condicional(enter, memory, config_memory):
+def chat_reposta_condicional(enter, memory, config_memory) -> str:
     input_message = {"messages": [{"content": enter}]}
+
     resposta_incorporada = condicional_edges(input_message)
     try:
         if isinstance(resposta_incorporada, dict):
-            resposta_incorporada = resposta_incorporada["messages"][0][1]
+            resposta_incorporada = resposta_incorporada["messages"][0]["content"]
     except KeyError:
         resposta_incorporada = resposta_incorporada["messages"][0]["content"]
 
@@ -166,7 +169,9 @@ for message in messages:
 
 # Accept user input
 
-prompt = st.chat_input("Me pergunte sobre filmes?")
+prompt = st.chat_input(
+    "Me pergunte sobre filmes?",
+)
 
 
 if prompt:

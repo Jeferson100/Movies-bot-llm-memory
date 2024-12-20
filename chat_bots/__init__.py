@@ -3,6 +3,8 @@ from .chat_limpa_resposta import *
 from .chat_perguntas_ofensivas import *
 from .chat_summarize import *
 from .chat_avaliacao import *
+from .verificao_key import *
+
 
 __all__ = [
     "chat_bot",
@@ -10,4 +12,5 @@ __all__ = [
     "chat_perguntas_ofensivas",
     "chat_summarize",
     "chat_avaliacao",
+    "verificao_key",
 ]
