@@ -1,6 +1,6 @@
 install:
-	uv pip install --upgrade pip && \
-		uv pip install -r requirements.txt
+	pip install --upgrade pip && \
+		pip install -r requirements.txt
 
 format:
 	black chat_bots/*.py extracao/*.py funcoes_auxiliares/*.py tests/*.py app_streamlit.py
