@@ -1,7 +1,10 @@
-Testes actions:
-  on:
-    push:
-    workflow_dispatch:
+name: Testes
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   test:
