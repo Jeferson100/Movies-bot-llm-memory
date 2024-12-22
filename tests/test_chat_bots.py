@@ -1,20 +1,18 @@
-import pytest
-from chat_bots import (chat_bot, 
-                       chat_summarize_messages,
-                       chat_avaliacao,
-                       chat_limpa_resposta)
+from chat_bots import (
+    chat_bot,
+    chat_summarize_messages,
+    chat_avaliacao,
+    chat_limpa_resposta,
+)
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.chat_history import BaseChatMessageHistory
-from funcoes_auxiliares import InMemoryHistory, chat_summarize_messages
+from funcoes_auxiliares import InMemoryHistory
 from unittest.mock import patch
 
-config = {
-    "configurable": {
-        "session_id": "foo"
-    }
-}
+config = {"configurable": {"session_id": "foo"}}
 
 store = {}
+
 
 def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
@@ -26,7 +24,9 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
                 if "\n%%%\n" in mes.content:
                     store[session_id].messages[
                         store[session_id].messages.index(mes)
-                    ] = HumanMessage(content=mes.content.split("\n%%%\n")[0])
+                    ] = HumanMessage(
+                        content=mes.content.split("\n%%%\n")[0]
+                    )  # type: ignore
             if isinstance(mes, AIMessage):
                 store[session_id].messages[store[session_id].messages.index(mes)] = (
                     AIMessage(content=chat_summarize_messages(mes.content))
@@ -38,19 +38,12 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
         del store[session_id].messages[:2]
     return store[session_id]
 
-@pytest.fixture
-def setup_store():
-    global store
-    store = {}
-    yield
-    store = {}
 
 def test_chat_bot_resposta() -> None:
-    result = chat_bot("Hello",get_by_session_id, config)
+    result = chat_bot("Hello", get_by_session_id, config)  # type: ignore
     assert result is not None
     assert isinstance(result["messages"][0][1], str)
     assert len(result["messages"][0][1]) > 0
-    
 
 
 def test_chat_summarize_messages():
@@ -70,29 +63,41 @@ def test_chat_summarize_messages():
                 Esses filmes exploram temas de ficção científica, como viagens no tempo, robôs, 
                 cometas e futuros distópicos. Se você quiser mais sugestões ou informações sobre esses 
                 filmes, basta perguntar!"""
-    
+
     # Use o patch para substituir chat_summarize_messages pela função mock
-    with patch('chat_bots.chat_summarize_messages', return_value="Resumo de filmes de ficção científica"):
+    with patch(
+        "chat_bots.chat_summarize_messages",
+        return_value="Resumo de filmes de ficção científica",
+    ):
         result = chat_summarize_messages(input_message)
         assert result is not None
         assert len(result) < len(input_message)
         assert isinstance(result, str)
-        
+
+
 def test_chat_avaliacao_true() -> None:
-    with patch('chat_bots.chat_avaliacao', return_value="Resposta positiva"):
+    with patch("chat_bots.chat_avaliacao", return_value="Resposta positiva"):
         result = chat_avaliacao("Me fale sobre o filme I, Robot (2004)")
         assert result is not None
-        assert isinstance(result['messages'][0]['content'], str)
-        assert len(result['messages'][0]['content']) > 0
-        assert "yes" in result['messages'][0]['content'].lower() or "sim" in result['messages'][0]['content'].lower()
-    
+        assert isinstance(result["messages"][0]["content"], str)
+        assert len(result["messages"][0]["content"]) > 0
+        assert (
+            "yes" in result["messages"][0]["content"].lower()
+            or "sim" in result["messages"][0]["content"].lower()
+        )
+
+
 def test_chat_avaliacao_false() -> None:
-    with patch('chat_bots.chat_avaliacao', return_value="Resposta negativa"):
+    with patch("chat_bots.chat_avaliacao", return_value="Resposta negativa"):
         result = chat_avaliacao("qual e a cor do ceu")
         assert result is not None
-        assert isinstance(result['messages'][0]['content'], str)
-        assert len(result['messages'][0]['content']) > 0
-        assert "no" in result['messages'][0]['content'].lower() or "não" in result['messages'][0]['content'].lower()
+        assert isinstance(result["messages"][0]["content"], str)
+        assert len(result["messages"][0]["content"]) > 0
+        assert (
+            "no" in result["messages"][0]["content"].lower()
+            or "não" in result["messages"][0]["content"].lower()
+        )
+
 
 def test_chat_limpa_resposta() -> None:
     input_message = """'AdoroCinema\nEx.: Sem Coração, Os Observadores, Dogman\n* Melhores filmes\n* Em cartaz\n* 
@@ -110,7 +115,7 @@ def test_chat_limpa_resposta() -> None:
     Marisa Paredes\nTítulo original  La vita e bella\nMeus amigos\nDurante a Segunda Guerra Mundial na Itália, o judeu Guido 
     (Roberto Benigni) e\nseu filho Giosué são levados para um campo de concentração nazista. 
     """
-    with patch('chat_bots.chat_limpa_resposta', return_value="Limpar a resposta"):
+    with patch("chat_bots.chat_limpa_resposta", return_value="Limpar a resposta"):
         result = chat_limpa_resposta(input_message)
         assert result is not None
         assert len(result) < len(input_message)

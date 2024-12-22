@@ -45,9 +45,11 @@ def search_and_incorporateta_tavily(user_input):
         include_answer=True,
         include_raw_content=True,
         include_images=False,
-        include_domains=['https://www.adorocinema.com/', 
-                         'https://www.rottentomatoes.com/',
-                         'https://cinepop.com.br/']
+        include_domains=[
+            "https://www.adorocinema.com/",
+            "https://www.rottentomatoes.com/",
+            "https://cinepop.com.br/",
+        ],
     )
 
     pesquisa = search_tool.invoke({"query": user_input})
@@ -76,7 +78,7 @@ def search_and_incorporateta_tavily(user_input):
     for link in links_results:
         try:
             print(link)
-            texto.append(extractor.clean_text_html2text(link, timeout=20))
+            texto.append(extractor.clean_text_html2text(link))
         except ClientConnectorDNSError:
             pass
 
@@ -114,7 +116,6 @@ def search_and_incorporateta_LinkupClient(user_input):
         query=user_input,
         depth="standard",
         output_type="searchResults",
-        
     )
 
     links = [
@@ -191,7 +192,7 @@ def condicional_edges(state):
         print(input_incorporado)
 
         if isinstance(input_incorporado, dict):
-            input_incorporado = input_incorporado["messages"][0]["content"] # type: ignore
+            input_incorporado = input_incorporado["messages"][0]["content"]  # type: ignore
 
         if len(input_incorporado) > 6000:
 
