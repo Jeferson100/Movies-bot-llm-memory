@@ -93,7 +93,7 @@ def chat_reposta_condicional(enter, memory, config_memory) -> str:
 st.title("Assistente de filmes e séries")
 
 st.image(
-    "https://raw.githubusercontent.com/Jeferson100/Movies-bot-llm-memory/refs/heads/main/imagen/imagem_modificada.webp",
+    "https://raw.githubusercontent.com/Jeferson100/Movies-bot-llm-memory/refs/heads/main/image/imagem_modificada.webp",
     use_column_width=True,
 )
 
