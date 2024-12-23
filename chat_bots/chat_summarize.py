@@ -10,12 +10,12 @@ from .verificao_key import get_secret_key
 
 load_dotenv()
 
-api_key = get_secret_key("GROQ_API_KEY")
-if api_key is None:
+api_secret_groq = get_secret_key("GROQ_API_KEY")
+if api_secret_groq is None:
     raise ValueError("API key inválida ou não definida")
 
 
-def chat_summarize_messages(message: str) -> str:
+def chat_summarize_messages(message: str, api_secret: str = api_secret_groq) -> str:
     """
     Summarize the last two messages in the chat history.
 
@@ -28,7 +28,7 @@ def chat_summarize_messages(message: str) -> str:
 
     """
     model = ChatGroq(
-        api_key=api_key,
+        api_key=api_secret,
         model="llama-3.2-11b-vision-preview",
         temperature=0.5,
         stop_sequences=None,

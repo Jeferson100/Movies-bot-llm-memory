@@ -1,18 +1,27 @@
 from firecrawl import FirecrawlApp
-
-
+from chat_bots import get_secret_key
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
+api_secret_firecrawl = get_secret_key
+if api_secret_firecrawl is None:
+    raise ValueError("API key FIRECRAWL inválida ou não definida")
+
+
 app = FirecrawlApp(api_key=os.getenv("FIRECRAWL_API_KEY"))
 
 
 class LinksExtractorFireCrawl:
+    def __init__(self, api_secret: str = api_secret_firecrawl):
+        self.api_secret = api_secret
+        self.app = FirecrawlApp(api_key=self.api_secret)
+
     def extrair_links_firecrawl(self, url: str) -> str:
         # Scrape a website:
-        scrape_result = app.scrape_url(url, params={"formats": ["markdown"]})
+        scrape_result = self.app.scrape_url(url, params={"formats": ["markdown"]})
+
         return scrape_result
 
     def clean_text_firecrawl(self, url: str) -> str:

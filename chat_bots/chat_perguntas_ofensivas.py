@@ -5,13 +5,13 @@ from pydantic import BaseModel, Field
 from typing import Dict, List, Tuple
 from .verificao_key import get_secret_key
 
-api_secret = get_secret_key("GROQ_API_KEY")
-if api_secret is None:
+api_secret_groq = get_secret_key("GROQ_API_KEY")
+if api_secret_groq is None:
     raise ValueError("API key inválida ou não definida")
 
 
 def chat_avaliacao_perguntas_ofensivas(
-    mensagem: str,
+    mensagem: str, api_secret: str = api_secret_groq
 ) -> Dict[str, List[Tuple[str, str]]]:
 
     class resposta(BaseModel):

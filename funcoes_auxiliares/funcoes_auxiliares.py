@@ -1,13 +1,29 @@
 from dotenv import load_dotenv
-import os
 from extracao import LinksExtractorHtml2Text
 from langchain_community.tools import TavilySearchResults
 import random
 from aiohttp import ClientConnectorDNSError
 from linkup import LinkupClient
-from chat_bots import chat_limpa_resposta, chat_avaliacao
+from chat_bots import chat_limpa_resposta, chat_avaliacao, get_secret_key
+
 
 load_dotenv()
+
+api_secret_groq = get_secret_key("GROQ_API_KEY")
+if api_secret_groq is None:
+    raise ValueError("API key GROQ inválida ou não definida")
+
+api_secret_tavily = get_secret_key("TAVILY_API_KEY")
+if api_secret_tavily is None:
+    raise ValueError("API key TAVILY inválida ou não definida")
+
+api_secret_firecrawl = get_secret_key("FIRECRAWL_API_KEY")
+if api_secret_firecrawl is None:
+    raise ValueError("API key FIRECRAWL inválida ou não definida")
+
+api_secret_searchapi = get_secret_key("SEARCHAPI_API_KEY")
+if api_secret_searchapi is None:
+    raise ValueError("API key SEARCHAPI inválida ou não definida")
 
 
 def sorteando_range_texto(texto):
@@ -23,7 +39,7 @@ def sorteando_range_texto(texto):
     return input_incor
 
 
-def search_and_incorporateta_tavily(user_input):
+def search_and_incorporateta_tavily(user_input: str, api_groq: str = api_secret_groq):
     # Realizando a pesquisa
 
     """
@@ -88,14 +104,18 @@ def search_and_incorporateta_tavily(user_input):
     if len(texto) > 6000:
         texto = sorteando_range_texto(texto)
 
-    texto_clean_final = chat_limpa_resposta(texto)
+    texto_clean_final = chat_limpa_resposta(texto, api_groq)
 
     combined_input = user_input + "\n%%%\n" + texto_clean_final
 
     return {"messages": [("user", combined_input)]}
 
 
-def search_and_incorporateta_LinkupClient(user_input):
+def search_and_incorporateta_LinkupClient(
+    user_input,
+    api_searchapi: str = api_secret_searchapi,
+    api_groq: str = api_secret_groq,
+):
     # Realizando a pesquisa
 
     """
@@ -110,7 +130,7 @@ def search_and_incorporateta_LinkupClient(user_input):
         str: The combined string of the original user input and the cleaned
         text extracted from the filtered search results.
     """
-    client = LinkupClient(api_key=os.getenv("SEARCHAPI_API_KEY"))
+    client = LinkupClient(api_key=api_searchapi)
 
     response = client.search(
         query=user_input,
@@ -149,14 +169,16 @@ def search_and_incorporateta_LinkupClient(user_input):
     if len(texto) > 6000:
         texto = sorteando_range_texto(texto)
 
-    texto_clean_final = chat_limpa_resposta(texto)
+    texto_clean_final = chat_limpa_resposta(texto, api_groq)
 
     combined_input = user_input + "\n%%%\n" + texto_clean_final
 
     return {"messages": [{"content": combined_input}]}
 
 
-def condicional_edges(state):
+def condicional_edges(
+    state, api_groq: str = api_secret_groq, api_searchapi: str = api_secret_searchapi
+):
     """
     Processes the given state to evaluate a chat message and conditionally incorporate additional information.
 
@@ -175,7 +197,7 @@ def condicional_edges(state):
     if isinstance(state, dict):
         state = state["messages"][0]["content"]
 
-    resposta_avaliada = chat_avaliacao(state)
+    resposta_avaliada = chat_avaliacao(state, api_groq)
 
     print(resposta_avaliada)
 
@@ -187,7 +209,7 @@ def condicional_edges(state):
         for palavra in palavras_chave
     ):
 
-        input_incorporado = search_and_incorporateta_LinkupClient(state)
+        input_incorporado = search_and_incorporateta_LinkupClient(state, api_searchapi)
 
         print(input_incorporado)
 

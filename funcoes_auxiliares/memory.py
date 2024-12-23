@@ -4,6 +4,11 @@ from typing import List, Sequence
 from langchain_core.chat_history import BaseChatMessageHistory
 from chat_bots import chat_summarize_messages
 from langchain_core.messages import HumanMessage, AIMessage
+from chat_bots import get_secret_key
+
+api_secret_groq = get_secret_key("GROQ_API_KEY")
+if api_secret_groq is None:
+    raise ValueError("API key inválida ou não definida")
 
 
 class InMemoryHistory(BaseChatMessageHistory, BaseModel):
@@ -20,7 +25,9 @@ class InMemoryHistory(BaseChatMessageHistory, BaseModel):
         self.messages = []
 
 
-def get_by_session_id(session_id: str, store: dict) -> BaseChatMessageHistory:
+def get_by_session_id(
+    session_id: str, store: dict, api_groq: str = api_secret_groq
+) -> BaseChatMessageHistory:
     if session_id not in store:
         store[session_id] = InMemoryHistory()
 
@@ -35,7 +42,7 @@ def get_by_session_id(session_id: str, store: dict) -> BaseChatMessageHistory:
                     )  # type: ignore
             if isinstance(mes, AIMessage):
                 store[session_id].messages[store[session_id].messages.index(mes)] = (
-                    AIMessage(content=chat_summarize_messages(mes.content))  # type: ignore
+                    AIMessage(content=chat_summarize_messages(mes.content, api_groq))  # type: ignore
                 )
 
     # Removendo as duas primeiras mensagens

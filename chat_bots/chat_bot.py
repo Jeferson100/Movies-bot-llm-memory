@@ -13,13 +13,16 @@ from .verificao_key import get_secret_key
 
 load_dotenv()
 
-api_secret = get_secret_key("GROQ_API_KEY")
-if api_secret is None:
+api_secret_groq = get_secret_key("GROQ_API_KEY")
+if api_secret_groq is None:
     raise ValueError("API key inválida ou não definida")
 
 
 def chat_bot(
-    mensagem: str, memory: str, config: Dict[str, Dict[str, str]]
+    mensagem: str,
+    memory: str,
+    config: Dict[str, Dict[str, str]],
+    api_secret: str = api_secret_groq,
 ) -> Dict[str, List[Tuple[str, str]]]:
 
     model = ChatGroq(

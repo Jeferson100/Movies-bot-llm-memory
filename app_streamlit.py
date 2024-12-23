@@ -4,6 +4,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from funcoes_auxiliares import InMemoryHistory
 from chat_bots import chat_bot, chat_summarize_messages
+import os
 
 
 st.set_page_config(
@@ -64,7 +65,7 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
                     )  # type: ignore
             if isinstance(message, AIMessage):
                 store[session_id].messages[store[session_id].messages.index(mes)] = (
-                    AIMessage(content=chat_summarize_messages(mes.content))  # type: ignore
+                    AIMessage(content=chat_summarize_messages(mes.content, groq_api))  # type: ignore
                 )
 
     # Removendo as duas primeiras mensagens
@@ -74,17 +75,20 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
     return store[session_id]
 
 
-def chat_reposta_condicional(enter, memory, config_memory) -> str:
+def chat_reposta_condicional(
+    enter, memory, config_memory, api_groq, api_searchapi
+) -> str:
+
     input_message = {"messages": [{"content": enter}]}
 
-    resposta_incorporada = condicional_edges(input_message)
+    resposta_incorporada = condicional_edges(input_message, api_groq, api_searchapi)
     try:
         if isinstance(resposta_incorporada, dict):
             resposta_incorporada = resposta_incorporada["messages"][0]["content"]
     except KeyError:
         resposta_incorporada = resposta_incorporada["messages"][0]["content"]
 
-    resposta_concluida = chat_bot(resposta_incorporada, memory, config_memory)
+    resposta_concluida = chat_bot(resposta_incorporada, memory, config_memory, api_groq)
 
     return resposta_concluida["messages"][0][1]
 
@@ -112,12 +116,44 @@ with st.sidebar:
                     """
     )
     st.markdown("---")
-    st.sidebar.markdown(
+    st.markdown("# Login APIS:")
+    st.write(
+        """Para utilizar o Bot, primeiro faça um cadastro gratuito nos sites abaixo e depois gere as chaves APIs necessárias:"""
+    )
+
+    st.markdown(
         """
-                        <img src="https://static.vecteezy.com/ti/vetor-gratis/p2/7459267-conjunto-de-icones-de-cinema-elementos-de-design-de-filme-com-um-conceito-de-cartoon-ilustracao-gratis-vetor.jpg" width="400">
-                    """,
+    [![Groq API](https://img.shields.io/badge/Create%20Groq%20API%20Key-black?style=flat&logo=groq)](https://console.groq.com/keys)
+    [![Create TAVILY API Key](https://img.shields.io/badge/Create%20TAVILY%20API%20Key-blue?style=flat&logo=key)](https://app.tavily.com/home?code=PySHU7SgEgmNYjzs9NsvBjVy1HyFziRHp1NWQ_-j_MH42&state=eyJyZXR1cm5UbyI6Ii9ob21lIn0)
+    [![Create FIRECRAWL API Key](https://img.shields.io/badge/Create%20FIRECRAWL%20API%20Key-red?style=flat&logo=key)](https://www.firecrawl.dev/app/api-keys)
+    [![Create SEARCHAPI API Key](https://img.shields.io/badge/Create%20SEARCHAPI%20API%20Key-green?style=flat&logo=key)](https://www.searchapi.io/)
+    """,
         unsafe_allow_html=True,
     )
+
+    if os.getenv("GROQ_API_KEY") is not None:
+        groq_api = os.getenv("GROQ_API_KEY")
+        st.success("API key GROQ ja existe!", icon="✅")
+    else:
+        groq_api = st.text_input("Enter Replicate API token:", type="password")
+
+    if os.getenv("TAVILY_API_KEY") is not None:
+        tavily_api = os.getenv("TAVILY_API_KEY")
+        st.success("API key TAVILY ja existe!", icon="✅")
+    else:
+        tavily_api = st.text_input("Enter Replicate API token:", type="password")
+
+    if os.getenv("FIRECRAWL_API_KEY") is not None:
+        firecrawl_api = os.getenv("FIRECRAWL_API_KEY")
+        st.success("API key FIRECRAWL ja existe!", icon="✅")
+    else:
+        firecrawl_api = st.text_input("Enter Replicate API token:", type="password")
+
+    if os.getenv("SEARCHAPI_API_KEY") is not None:
+        searchapi_api = os.getenv("SEARCHAPI_API_KEY")
+        st.success("API key SEARCHAPI ja existe!", icon="✅")
+    else:
+        searchapi_api = st.text_input("Enter Replicate API token:", type="password")
 
     st.markdown("---")
 
@@ -181,7 +217,9 @@ if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    response = chat_reposta_condicional(prompt, get_by_session_id, config)
+    response = chat_reposta_condicional(
+        prompt, get_by_session_id, config, groq_api, searchapi_api
+    )
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):

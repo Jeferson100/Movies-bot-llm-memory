@@ -15,7 +15,7 @@ def test_no_interaction():
     assert len(at.chat_input) == 1
     assert len(at.button) == 1
     assert len(at.markdown) >= 10
-    assert len(at.sidebar) == 12
+    assert len(at.sidebar) == 18
 
 
 @pytest.fixture
