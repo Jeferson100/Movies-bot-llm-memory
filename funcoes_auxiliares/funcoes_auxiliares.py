@@ -9,20 +9,24 @@ from chat_bots import chat_limpa_resposta, chat_avaliacao, get_secret_key
 
 load_dotenv()
 
-api_secret_groq = get_secret_key("GROQ_API_KEY")
-if api_secret_groq is None:
+try:
+    api_secret_groq = get_secret_key("GROQ_API_KEY")
+except KeyError:
     raise ValueError("API key GROQ inválida ou não definida")
 
-api_secret_tavily = get_secret_key("TAVILY_API_KEY")
-if api_secret_tavily is None:
+try:
+    api_secret_tavily = get_secret_key("TAVILY_API_KEY")
+except KeyError:
     raise ValueError("API key TAVILY inválida ou não definida")
 
-api_secret_firecrawl = get_secret_key("FIRECRAWL_API_KEY")
-if api_secret_firecrawl is None:
+try:
+    api_secret_firecrawl = get_secret_key("FIRECRAWL_API_KEY")
+except KeyError:
     raise ValueError("API key FIRECRAWL inválida ou não definida")
 
-api_secret_searchapi = get_secret_key("SEARCHAPI_API_KEY")
-if api_secret_searchapi is None:
+try:
+    api_secret_searchapi = get_secret_key("SEARCHAPI_API_KEY")
+except KeyError:
     raise ValueError("API key SEARCHAPI inválida ou não definida")
 
 

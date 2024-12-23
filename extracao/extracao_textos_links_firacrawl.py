@@ -5,8 +5,9 @@ import os
 
 load_dotenv()
 
-api_secret_firecrawl = get_secret_key
-if api_secret_firecrawl is None:
+try:
+    api_secret_firecrawl = get_secret_key("FIRECRAWL_API_KEY")
+except KeyError:
     raise ValueError("API key FIRECRAWL inválida ou não definida")
 
 

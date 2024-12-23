@@ -216,6 +216,7 @@ if prompt:
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
+        
 
     response = chat_reposta_condicional(
         prompt, get_by_session_id, config, groq_api, searchapi_api
