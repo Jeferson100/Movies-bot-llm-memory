@@ -5,8 +5,9 @@ from pydantic import BaseModel, Field
 from typing import Dict, List, Tuple
 from .verificao_key import get_secret_key
 
-api_secret_groq = get_secret_key("GROQ_API_KEY")
-if api_secret_groq is None:
+try:
+    api_secret_groq = get_secret_key("GROQ_API_KEY")
+except KeyError:
     raise ValueError("API key inválida ou não definida")
 
 
