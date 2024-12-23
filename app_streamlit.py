@@ -217,14 +217,15 @@ if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
         
+    try:
+        response = chat_reposta_condicional(
+            prompt, get_by_session_id, config, groq_api, searchapi_api
+        )
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
 
-    response = chat_reposta_condicional(
-        prompt, get_by_session_id, config, groq_api, searchapi_api
-    )
-
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-        st.markdown(response)
-
-    # Add assistant response to chat history
-    messages.append({"role": "assistant", "content": response})
+        # Add assistant response to chat history
+        messages.append({"role": "assistant", "content": response})
+    except ValueError as e:
+        st.error(f"Erro ao utilizar a API: {e}")
