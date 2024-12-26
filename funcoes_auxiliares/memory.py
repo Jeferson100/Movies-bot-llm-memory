@@ -8,8 +8,8 @@ from chat_bots import get_secret_key
 
 try:
     api_secret_groq = get_secret_key("GROQ_API_KEY")
-except KeyError:
-    raise ValueError("API key inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key inválida ou não definida") from exc
 
 
 class InMemoryHistory(BaseChatMessageHistory, BaseModel):

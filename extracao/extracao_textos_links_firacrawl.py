@@ -7,8 +7,8 @@ load_dotenv()
 
 try:
     api_secret_firecrawl = get_secret_key("FIRECRAWL_API_KEY")
-except KeyError:
-    raise ValueError("API key FIRECRAWL inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key FIRECRAWL inválida ou não definida") from exc
 
 
 app = FirecrawlApp(api_key=os.getenv("FIRECRAWL_API_KEY"))

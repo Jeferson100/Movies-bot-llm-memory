@@ -11,23 +11,23 @@ load_dotenv()
 
 try:
     api_secret_groq = get_secret_key("GROQ_API_KEY")
-except KeyError:
-    raise ValueError("API key GROQ inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key GROQ inválida ou não definida") from exc
 
 try:
     api_secret_tavily = get_secret_key("TAVILY_API_KEY")
-except KeyError:
-    raise ValueError("API key TAVILY inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key TAVILY inválida ou não definida") from exc
 
 try:
     api_secret_firecrawl = get_secret_key("FIRECRAWL_API_KEY")
-except KeyError:
-    raise ValueError("API key FIRECRAWL inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key FIRECRAWL inválida ou não definida") from exc
 
 try:
     api_secret_searchapi = get_secret_key("SEARCHAPI_API_KEY")
-except KeyError:
-    raise ValueError("API key SEARCHAPI inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key SEARCHAPI inválida ou não definida") from exc
 
 
 def sorteando_range_texto(texto):

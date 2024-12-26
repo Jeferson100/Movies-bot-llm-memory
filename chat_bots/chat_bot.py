@@ -15,8 +15,8 @@ load_dotenv()
 
 try:
     api_secret_groq = get_secret_key("GROQ_API_KEY")
-except KeyError:
-    raise ValueError("API key inválida ou não definida")
+except KeyError as exc:
+    raise ValueError("API key inválida ou não definida") from exc
 
 
 def chat_bot(
