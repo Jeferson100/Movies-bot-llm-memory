@@ -5,6 +5,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from funcoes_auxiliares import InMemoryHistory
 from chat_bots import chat_bot, chat_summarize_messages
 import os
+from groq import GroqError
 
 
 st.set_page_config(
@@ -230,5 +231,7 @@ if prompt:
 
         # Add assistant response to chat history
         messages.append({"role": "assistant", "content": response})
-    except ValueError as e:
-        st.error(f"Erro ao utilizar a API: {e}")
+    except GroqError as e:
+        st.error(
+            "Por favor, insira um token de API válido. Clique no botão para abrir uma conta na [GROQ](https://console.groq.com/keys) e obter um token."
+        )
