@@ -135,25 +135,25 @@ with st.sidebar:
             groq_api = os.getenv("GROQ_API_KEY")
             st.success("API key GROQ ja existe!", icon="✅")
         else:
-            groq_api = st.text_input("Enter Replicate API token:", type="password")
+            groq_api = st.text_input("Enter GROQ API token:", type="password")
 
         if os.getenv("TAVILY_API_KEY") is not None:
             tavily_api = os.getenv("TAVILY_API_KEY")
             st.success("API key TAVILY ja existe!", icon="✅")
         else:
-            tavily_api = st.text_input("Enter Replicate API token:", type="password")
+            tavily_api = st.text_input("Enter TAVILY API token:", type="password")
 
         if os.getenv("FIRECRAWL_API_KEY") is not None:
             firecrawl_api = os.getenv("FIRECRAWL_API_KEY")
             st.success("API key FIRECRAWL ja existe!", icon="✅")
         else:
-            firecrawl_api = st.text_input("Enter Replicate API token:", type="password")
+            firecrawl_api = st.text_input("Enter FIRECRAWL API token:", type="password")
 
         if os.getenv("SEARCHAPI_API_KEY") is not None:
             searchapi_api = os.getenv("SEARCHAPI_API_KEY")
             st.success("API key SEARCHAPI ja existe!", icon="✅")
         else:
-            searchapi_api = st.text_input("Enter Replicate API token:", type="password")
+            searchapi_api = st.text_input("Enter SEARCHAPI API token:", type="password")
     except ValueError as e:
         st.error(f"Erro ao utilizar a API: {e}")
         st.stop()
