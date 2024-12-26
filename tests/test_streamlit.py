@@ -1,6 +1,4 @@
 from streamlit.testing.v1 import AppTest
-from app_streamlit import clear_messages
-import pytest
 from unittest.mock import patch
 
 
@@ -16,13 +14,6 @@ def test_no_interaction():
     assert len(at.button) == 1
     assert len(at.markdown) >= 10
     assert len(at.sidebar) == 18
-
-
-@pytest.fixture
-def setup_session_state():
-    clear_messages()
-    yield
-    clear_messages()
 
 
 def test_chat_resposta_condicional_true():
