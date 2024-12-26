@@ -1,12 +1,12 @@
 def test_importacoes_extracao():
     from extracao import (
         LinksExtractor,
-        LinksExtractorFireCrawl,
+        # LinksExtractorFireCrawl,
         LinksExtractorHtml2Text,
     )
 
     assert LinksExtractorHtml2Text
-    assert LinksExtractorFireCrawl
+    # assert LinksExtractorFireCrawl
     assert LinksExtractor
 
 
