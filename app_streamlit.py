@@ -64,7 +64,7 @@ def get_by_session_id(session_id: str) -> BaseChatMessageHistory:
                     ] = HumanMessage(
                         content=mes.content.split("\n%%%\n")[0]  # type: ignore
                     )  # type: ignore
-            if isinstance(message, AIMessage):
+            if isinstance(mes, AIMessage):
                 store[session_id].messages[store[session_id].messages.index(mes)] = (
                     AIMessage(content=chat_summarize_messages(mes.content, groq_api))  # type: ignore
                 )
@@ -89,7 +89,12 @@ def chat_reposta_condicional(
     except KeyError:
         resposta_incorporada = resposta_incorporada["messages"][0]["content"]
 
-    resposta_concluida = chat_bot(resposta_incorporada, memory, config_memory, api_groq)
+    resposta_concluida = chat_bot(
+        mensagem=resposta_incorporada,
+        memory=memory,
+        config=config_memory,
+        api_secret=api_groq,
+    )
 
     return resposta_concluida["messages"][0][1]
 

@@ -213,7 +213,9 @@ def condicional_edges(
         for palavra in palavras_chave
     ):
 
-        input_incorporado = search_and_incorporateta_LinkupClient(state, api_searchapi)
+        input_incorporado = search_and_incorporateta_LinkupClient(
+            state, api_searchapi, api_groq
+        )
 
         print(input_incorporado)
 
